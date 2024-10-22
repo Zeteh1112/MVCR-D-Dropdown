@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<style>
+    .ui-autocomplete {
+        max-height: 350px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+</style>
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+    $(function() {
+        var urlForEmpty = '@Url.Action("AutocompleteDD", "Home")';
+        var urlForNonEmpty = '@Url.Action("Autocomplete", "Home")';
+        
+        $("#autocomplete").autocomplete({
+            source: function(request, response) {
+                // Select URL based on whether the input is empty or not
+                var url = request.term.length > 0 ? urlForNonEmpty : urlForEmpty;
+
+                $.ajax({
+                    url: url,
+                    dataType: "json",
+                    data: {
+                        term: request.term
+                    },
+                    success: function(data) {
+                        console.log(data); // For debugging
+                        response(data);
+                    }
+                });
+            },
+            minLength: 0, // Set minLength to 0 to allow search on focus
+        }).on("focus", function() {
+            // Trigger the autocomplete search when the input field gains focus
+            $(this).autocomplete('search', '');
+        }).on("input", function() {
+            // Trigger the autocomplete search when the user enters text
+            $(this).autocomplete('search', $(this).val());
+        });
+    });
+</script>
+
+
+
+
+<div class="row">
+    <div class="col-2">
+        <h4>Auto Complete</h4>
+    </div>    
+    <div class="col-8">
+        <input id="autocomplete" type="text" placeholder="Enter Two Words" />
+    </div>
+</div>
